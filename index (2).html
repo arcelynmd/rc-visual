@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planetary Age Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 2.8em;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 40px;
+            font-size: 1.1em;
+            font-weight: 300;
+        }
+
+        .input-section {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        input[type="number"] {
+            padding: 15px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            width: 250px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .bodies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .body-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .body-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .body-video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+
+        .body-video iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .no-video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 1.1em;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .body-info {
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(245,247,255,1) 100%);
+        }
+
+        .body-name {
+            font-size: 1.6em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .body-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .body-stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 700;
+            color: #444;
+            letter-spacing: 0.3px;
+        }
+
+        .stat-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .bodies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            input[type="number"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Planetary Age Calculator</h1>
+        <p class="subtitle">Calculate your age across the solar system with custom YouTube videos</p>
+
+        <div class="input-section">
+            <input type="number" id="earthYears" placeholder="Enter Earth Years" min="0" step="0.1" value="25">
+            <button onclick="calculateAges()">Calculate</button>
+        </div>
+
+        <div class="bodies-grid" id="bodiesGrid">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // ===== EDIT YOUR YOUTUBE VIDEO IDs HERE =====
+        // Find the video ID in the YouTube URL: youtube.com/watch?v=VIDEO_ID_HERE
+        // Example: youtube.com/watch?v=dQw4w9WgXcQ → Add "dQw4w9WgXcQ"
+        
+        let celestialBodies = [
+            {
+                name: 'Mercury',
+                orbitalPeriod: 0.2408,
+                distanceFromSun: '57.9 million km',
+                youtubeId: '' // Add YouTube video ID here
+            },
+            {
+                name: 'Venus',
+                orbitalPeriod: 0.6152,
+                distanceFromSun: '108.2 million km',
+                youtubeId: '' // Add YouTube video ID here
+            },
+            {
+                name: 'Earth',
+                orbitalPeriod: 1.0,
+                distanceFromSun: '149.6 million km',
+                youtubeId: '' // Add YouTube video ID here
+            },
+            {
+                name: 'Mars',
+                orbitalPeriod: 1.8808,
+                distanceFromSun: '227.9 million km',
+                youtubeId: '' // Add YouTube video ID here
+            },
+            {
+                name: 'Jupiter',
+                orbitalPeriod: 11.862,
+                distanceFromSun: '778.5 million km',
+                youtubeId: '' // Add YouTube video ID here
+            },
+            {
+                name: 'Saturn',
+                orbitalPeriod: 29.457,
+                distanceFromSun: '1.43 billion km',
+                youtubeId: '' // Add YouTube video ID here
+            },
+            {
+                name: 'Uranus',
+                orbitalPeriod: 84.017,
+                distanceFromSun: '2.87 billion km',
+                youtubeId: '' // Add YouTube video ID here
+            },
+            {
+                name: 'Neptune',
+                orbitalPeriod: 164.791,
+                distanceFromSun: '4.50 billion km',
+                youtubeId: '' // Add YouTube video ID here
+            },
+            {
+                name: 'Pluto',
+                orbitalPeriod: 247.94,
+                distanceFromSun: '5.91 billion km',
+                youtubeId: '' // Add YouTube video ID here
+            }
+        ];
+
+        // ===== END OF EDITABLE SECTION =====
+
+        function calculateAges() {
+            const input = document.getElementById('earthYears');
+            const earthYears = parseFloat(input.value);
+
+            if (isNaN(earthYears) || earthYears < 0) {
+                return;
+            }
+
+            const bodiesGrid = document.getElementById('bodiesGrid');
+            bodiesGrid.innerHTML = '';
+
+            celestialBodies.forEach(body => {
+                const card = document.createElement('div');
+                card.className = 'body-card';
+
+                const age = (earthYears / body.orbitalPeriod).toFixed(2);
+                const revolutions = (earthYears / body.orbitalPeriod).toFixed(2);
+
+                let videoHTML = '';
+                if (body.youtubeId.trim()) {
+                    videoHTML = `
+                        <div class="body-video">
+                            <iframe 
+                                src="https://www.youtube.com/embed/${body.youtubeId}" 
+                                title="${body.name} Video"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    `;
+                } else {
+                    videoHTML = `
+                        <div class="no-video">
+                            📹 No video added<br>
+                            <span style="font-size: 0.8em;">Edit the code to add a YouTube ID</span>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    ${videoHTML}
+                    <div class="body-info">
+                        <div class="body-name">${body.name}</div>
+                        <div class="body-stat">
+                            <span class="stat-label">Age:</span>
+                            <span class="stat-value">${age} years</span>
+                        </div>
+                        <div class="body-stat">
+                            <span class="stat-label">Revolutions:</span>
+                            <span class="stat-value">${revolutions}</span>
+                        </div>
+                        <div class="body-stat">
+                            <span class="stat-label">Orbit Time:</span>
+                            <span class="stat-value">${body.orbitalPeriod.toFixed(6)} Earth years</span>
+                        </div>
+                        <div class="body-stat">
+                            <span class="stat-label">Distance:</span>
+                            <span class="stat-value">${body.distanceFromSun}</span>
+                        </div>
+                    </div>
+                `;
+
+                bodiesGrid.appendChild(card);
+            });
+        }
+
+        // Calculate on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateAges();
+            
+            document.getElementById('earthYears').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateAges();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
